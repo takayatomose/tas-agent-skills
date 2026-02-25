@@ -42,20 +42,40 @@ Controllers or early application layers must convert the External ID to an Inter
 
 ---
 
-## 5. Pattern: Event-Driven Cross-Module Communication
+## 5. Pattern: Event-Driven Communication (EDD)
 
 **Importance**: 🔴 CRITICAL
 
 **Golden Rule**: NEVER call repositories or private services directly across modules. Always use Domain Events + Event Bus.
 
-### Benefits:
-- **Loose Coupling**: Modules are independent.
-- **Async Processing**: Improves response times and resiliency.
-- **Scalability**: Can be distributed via message brokers (RabbitMQ, Bull, Kafka).
+### Reliability & Patterns:
+- **Idempotency**: All event handlers MUST be idempotent. Record processed `eventId` in the database to prevent duplicate processing.
+- **Transactional Outbox**: To ensure atomicity, save domain events to an `outbox` table within the same database transaction as the business operation. A separate process should then publish these to the message broker.
+- **Payload Protocol**: Use dedicated DTOs or Interfaces for event payloads. **NEVER share Domain Entities** across module boundaries via events.
+- **Event Naming**: Use a standardized format: `Module.Action.Result` (e.g., `Order.Create.Success`, `Payment.Process.Failed`).
 
 ### Flow:
-1. **Source Module**: Finishes execution, publishes a `DomainEvent`.
-2. **Target Module**: Listens for the event and triggers a handler.
+1. **Source Module**: Finishes execution, records a `DomainEvent`.
+2. **Infrastructure**: Transactional Outbox ensures event persistence.
+3. **Dispatch**: Outbox worker publishes to the Event Bus.
+4. **Target Module**: Handler consumes, validates idempotency, and executes logic.
+
+---
+
+## 6. Pattern: Dependency Injection (DI) & IoC
+
+**Importance**: 🔴 CRITICAL
+
+### Injection Mandates:
+- **Interface-First**: Application and Domain layers must ONLY inject interfaces (e.g., `IUserRepository`), never concrete infrastructure classes.
+- **Constructor Injection**: All dependencies must be injected via constructors. Field/Setter injection is strictly forbidden for core business logic.
+- **Composition Root**: Centralize dependency registration in the module's entry point (e.g., NestJS Module).
+- **Anti-Pattern (Service Locator)**: NEVER use a container to "get" dependencies inside a service (e.g., `container.get(Service)`) as it hides dependencies and breaks testability.
+
+### Lifecycles:
+- **Singleton**: For stateless services and configuration.
+- **Scoped/Request**: For tenant-specific context or request-bound instances.
+- **Transient**: For lightweight, stateful helpers.
 
 ---
 

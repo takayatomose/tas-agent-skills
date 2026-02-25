@@ -1,4 +1,3 @@
-````instructions
 ---
 name: error-code-standards
 description: Standardized error codes and exception handling patterns across all languages and services. Ensures consistent error reporting and recovery strategies.
@@ -464,4 +463,3 @@ Fix: Implement idempotency key tracking in message queue
 
 ```
 
-```
