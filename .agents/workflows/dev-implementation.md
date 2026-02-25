@@ -9,9 +9,11 @@ Follow this workflow during the execution of a specific User Story or task incre
 - [ ] **Incremental Domain**: Update entities with only the domain logic required for this increment.
 
 ### 2. Iterative Development Cycle
+- [ ] **Start Task**: Mark the current story/task as in-progress (`[/]`) in `task.md`.
 - [ ] **Red-Green-Refactor**: Write unit tests for the story's acceptance criteria first, then implement the logic.
-- [ ] **Transactional Pipeline**: Follow the Use Case pipeline (Context -> Auth -> Validation -> Execution -> Persistence) for the story's core logic.
-- [ ] **Small Commits**: Commit or checkpoint frequently (e.g., after each AC is met).
+- [ ] **Repo Sync**: Ensure changes match the architecture and rules of the specific target repository.
+- [ ] **Small Commits**: Commit or checkpoint frequently.
+- [ ] **Complete Task**: Mark the task as done (`[x]`) in `task.md` before moving to the next.
 
 ### 3. Continuous Integration & Definition of Done (DoD)
 - [ ] **Clean Refactoring**: Polish the code within the current scope; ensure it adheres to all architectural rules.

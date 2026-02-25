@@ -18,6 +18,17 @@ You are working in a **multi-codebase workspace** with:
 - **packageTourAdmin** & **findtourgoUI**: Next.js/React frontends
 - **ai-agents**: AI development guidance system (current)
 
+## 🛡️ Workspace Safety & Sandbox
+
+To ensure system stability and security, the following rules apply to all AI Agent operations:
+
+1. **Sandbox Execution**: Strictly forbid reading or modifying files outside of the defined project repositories (`/Users/trungtran/ai-agents/` and its sub-packages).
+2. **Forbidden Directories**: NEVER access or write to system directories, including but not limited to: `/tmp`, `/etc`, `/var`, `/usr`, `~/.ssh`, `~/.config`, or OS-specific sensitive paths.
+3. **Path Validation**: Before any `write_to_file` or `replace_file_content` operation, verify that the `TargetFile` absolute path resides within the approved workspace.
+4. **Tool usage**: Only use tools on files that you have explicitly identified as part of the project structure via `list_dir` or `find_by_name`.
+
+---
+
 All projects follow **Clean Architecture + Event-Driven Design** with standardized error codes and patterns.
 
 ---

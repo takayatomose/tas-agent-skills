@@ -4,9 +4,10 @@ description: Technical requirement discovery, decomposition, and planning focuse
 
 Follow this workflow to break down complex features into deliverable increments (MVP) and ensure a clear understanding of value.
 
-### 1. User Story Mapping
+### 1. User Story Mapping & Repository Context
 - [ ] **Define Epic/Feature**: Briefly describe the high-level business goal.
-- [ ] **Technical Story Decomposition**: Break the epic into small, independent User Stories (Invest: Independent, Negotiable, Valuable, Estimable, Small, Testable).
+- [ ] **Identify Repositories**: Specify which repositories are involved (e.g., `omi-channel-be`, `findtourgoUI`, `packageTourAdmin`).
+- [ ] **Technical Story Decomposition**: Break the epic into small, independent User Stories in `task.md`.
 - [ ] **Identify MVP**: Select the absolute minimum set of stories required to deliver initial value.
 
 ### 2. Requirement Specification (per Story)

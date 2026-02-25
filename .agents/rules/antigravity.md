@@ -5,7 +5,7 @@ priority: "critical"
 
 # AI-Agents Rules System
 
-This file provides a complete reference to all development rules across the multi-codebase workspace. Rules are organized by category and apply to specific file patterns.
+This file provides a complete reference to all development rules across the multi-codebase workspace. Rules are organized by category and apply to specific file patterns. **Safety and absolute path isolation are non-negotiable mandates for all agents.**
 
 ## Core Architecture & Patterns
 

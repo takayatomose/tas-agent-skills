@@ -5,9 +5,11 @@ description: End-to-end professional delivery lifecycle orchestrating BA, Dev, a
 Follow this master workflow for any new feature or project to ensure enterprise-grade quality and Agile compliance.
 
 ### Phase 1: Planning & Analysis (Business Analysis)
-*Objective: Discover context, map user stories, and define acceptance criteria.*
+*Objective: Discover context, map user stories, and define repositories.*
+- [ ] **Task Visibility**: Create a `task.md` file in the `@brain/` directory. This is the **source of truth** for tracking progress.
+- [ ] **Repository Context**: Explicitly identify whether tasks belong to the Backend (e.g., `omi-channel-be`), Frontend (e.g., `findtourgoUI`), or both.
 - [ ] **Execution**: Follow the [@ba-requirement-analysis.md] workflow.
-- [ ] **Checkpoint**: Success is defined by an approved implementation plan and clear User Stories with AC.
+- [ ] **Checkpoint**: Success is defined by an approved implementation plan and a populated `task.md` checklist.
 
 ### Phase 2: Iterative Implementation (Development)
 *Objective: Deliver the feature increment through TDD and clean architecture.*
