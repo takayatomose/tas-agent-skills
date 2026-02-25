@@ -1,5 +1,5 @@
 ---
-name: backend-general-patterns
+name: general-patterns
 description: Universal backend development patterns, error handling, and architecture principles applicable across all languages (NestJS, Java, Go, Rust).
 ---
 

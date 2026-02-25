@@ -1,5 +1,5 @@
 ---
-name: rust-backend-development
+name: rust
 description: Expert in building type-safe, concurrent Rust services with ownership patterns, error handling, and clean architecture. Covers Actix, Axum, Rocket, and memory-safe patterns.
 ---
 

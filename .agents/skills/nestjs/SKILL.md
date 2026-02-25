@@ -1,5 +1,5 @@
 ---
-name: nestjs-backend-development
+name: nestjs
 description: Expert in implementing enterprise NestJS applications with Clean Architecture, strict TypeScript, and event-driven design. Supports Yarn build system and production-ready patterns.
 ---
 
@@ -148,17 +148,14 @@ Define domain exceptions (not HTTP exceptions):
 
 ```typescript
 // ❌ WRONG: HTTP exception in domain
-throw new BadRequestException('Invalid input');
+throw new BadRequestException("Invalid input");
 
 // ✅ CORRECT: Domain exception in application layer
 export class InvalidMessageException extends DomainException {
   constructor(content?: string) {
-    super(
-      ErrorCode.VAL_INVALID_MESSAGE,
-      `Message content is invalid`,
-      400,
-      { content },
-    );
+    super(ErrorCode.VAL_INVALID_MESSAGE, `Message content is invalid`, 400, {
+      content,
+    });
   }
 }
 ```

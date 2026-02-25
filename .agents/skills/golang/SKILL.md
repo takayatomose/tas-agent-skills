@@ -1,5 +1,5 @@
 ---
-name: golang-backend-development
+name: golang
 description: Expert in building concurrent Go services with clean architecture, error handling, and idiomatic patterns. Covers Go modules, interfaces, and concurrency best practices.
 ---
 

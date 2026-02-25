@@ -36,6 +36,11 @@ Standardized error codes and exception handling - error code categories (AUTH*, 
 Testing standards & patterns - AAA structure, mocking strategies, NestJS integration/E2E setups, test database lifecycle, and data factories.
 **Applies to**: `**/*.spec.ts`, `**/*.test.ts`
 
+### @frontend.instructions.md
+
+Modern frontend standards - React/Next.js (RSC), Vue, Astro patterns, SSR/CSR strategies, and design system mandates.
+**Applies to**: `**/*.{ts,tsx,vue,astro,js,jsx}`
+
 ---
 
 ## Language-Specific Rules

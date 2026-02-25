@@ -1,5 +1,5 @@
 ---
-name: java-backend-development
+name: java
 description: Expert in implementing enterprise Java applications (Spring/Quarkus) with Clean Architecture, strict typing, and multi-tenant design. Covers Gradle, Maven, and modern Java patterns.
 ---
 
