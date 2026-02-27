@@ -17,8 +17,9 @@ Follow this workflow during the execution of a specific User Story or task incre
 
 ### 3. Continuous Integration & Definition of Done (DoD)
 - [ ] **Clean Refactoring**: Polish the code within the current scope; ensure it adheres to all architectural rules.
+- [ ] **Update Technical Docs**: Update relevant technical documentation (API spec, Schema, Architecture) in the `docs/` folder.
 - [ ] **Strict Verification**: Run only the tests relevant to this story and ensure 100% pass rate.
-- [ ] **DoD Check**: Verify that all Acceptance Criteria defined in the BA phase are met.
+- [ ] **DoD Check**: Verify that all Acceptance Criteria and documentation requirements are met.
 
 ### 4. Incremental Feedback
 - [ ] **Prompt Review**: Checkpoint with the user after completing a single story or major logic block to ensure alignment before moving to the next increment.

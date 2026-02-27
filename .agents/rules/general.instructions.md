@@ -200,8 +200,6 @@ private readonly moduleB_Repository: IRepository; // ← Cross-module!
 
 ## 🔍 Complete Rules Reference Map
 
-### Core Rules (All Languages)
-
 ### Core Skills (All Languages)
 
 1. **`general-patterns`** - Standardized error codes (AUTH*\*, VAL*\_, BIZ\_\_, INF*\*, SYS*\*), exception patterns, HTTP status codes, recovery actions

@@ -18,4 +18,5 @@ Follow this workflow to verify each delivered increment against its specific acc
 
 ### 4. Iteration Increment Review
 - [ ] **Evidence Collection**: Record the successful completion of the story's criteria.
+- [ ] **Sync Test Docs**: Update test documentation and README/docs to reflect the final "as-built" implementation.
 - [ ] **Final DoD Sign-off**: Confirm the story is "Done" and ready for deployment or the next iteration.
