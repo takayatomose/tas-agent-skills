@@ -29,6 +29,8 @@ applyTo: "**/*.{ts,tsx,vue,astro,js,jsx}"
 - **Hydration Safety**: Prevent hydration mismatches by ensuring client-specific code (e.g., `localStorage`) is wrapped in `useEffect` or `onMounted`.
 - **Image Optimization**: Always use framework-specific Image components (e.g., `next/image`, `astro:assets`) with proper aspect ratios and lazy loading.
 - **Vitals Enforcement**: Maintain **LCP < 2.5s**, **CLS < 0.1**, and **INP < 200ms**.
+- **Layout Shift Prevention**: Always reserve dimensions (aspect-ratio or explicit height) for async content and images to prevent Layout Shift.
+- **Motion Accessibility**: Respect user motion preferences by checking `prefers-reduced-motion`. Disable or simplify non-essential animations.
 
 ---
 
@@ -36,6 +38,8 @@ applyTo: "**/*.{ts,tsx,vue,astro,js,jsx}"
 
 - **Atomic Design**: Organize components into Atoms (UI primitives), Molecules (groups of atoms), and Organisms (standalone sections).
 - **Base Components**: Build a "headless" or "styled-system" base layer. Components must be **theme-aware** and **accessible**.
+- **Touch Targets**: Minimum **44x44px** for all interactive elements and buttons on mobile-friendly views.
+- **Z-Index Scale**: Standardize z-index using a consistent scale: `z-10` (backgrounds), `z-20` (interactives), `z-30` (overlays/dropdowns), `z-50` (sticky nav/modals).
 - **Prop Standards**: Components should follow a predictable API pattern. Use discriminated unions for variant-based props (e.g., `variant: 'primary' | 'secondary'`).
 - **Tailwind CSS (If used)**: Centralize magic numbers in `tailwind.config.ts`. Avoid arbitrary values (`h-[123px]`) in component files.
 
