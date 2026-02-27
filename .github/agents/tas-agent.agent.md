@@ -9,6 +9,7 @@ tools:
   - agent
   - web
   - todo
+  - vscode
 ---
 
 # Fullstack Delivery Agent

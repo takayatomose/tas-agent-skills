@@ -4,6 +4,11 @@ description: Technical requirement discovery, decomposition, and planning focuse
 
 Follow this workflow to break down complex features into deliverable increments (MVP) and ensure a clear understanding of value.
 
+### 🧩 Required Skills & Rules
+- **Primary Skill**: `docs-analysis` (Analyze project docs for context)
+- **Secondary Skills**: `architecture`, `development`
+- **Global Rules**: `@general.instructions.md` (Selection Guide)
+
 ### 1. Documentation Analysis & Repository Context
 - [ ] **Analyze Existing Docs**: Read project documentation in the `docs/` folder to gather context, business rules, and architectural constraints.
 - [ ] **Define Epic/Feature**: Briefly describe the high-level business goal based on requirements and discovered docs.

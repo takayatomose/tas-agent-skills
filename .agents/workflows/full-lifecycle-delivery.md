@@ -4,6 +4,13 @@ description: End-to-end professional delivery lifecycle orchestrating BA, Dev, a
 
 Follow this master workflow for any new feature or project to ensure enterprise-grade quality and Agile compliance.
 
+### 🎭 Skill Transition Overview
+As you move through this workflow, your primary expertise should shift to match the goals of each phase:
+1. **Phase 1 (BA)**: Load `docs-analysis` + `architecture`.
+2. **Phase 2 (Dev)**: Load language skills (e.g., `nestjs`) + `development`.
+3. **Phase 3 (QA)**: Load `testing`.
+4. **Phase 4 (Review)**: Load `docs-analysis` (to finalize docs).
+
 ### Phase 1: Planning & Analysis (Business Analysis)
 *Objective: Discover context through documentation, map user stories, and define repositories.*
 - [ ] **Task Visibility**: Create a `task.md` file in the `@brain/` directory. This is the **source of truth** for tracking progress.

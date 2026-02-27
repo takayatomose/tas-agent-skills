@@ -4,6 +4,11 @@ description: Iterative Quality Assurance focused on rapid feedback and acceptanc
 
 Follow this workflow to verify each delivered increment against its specific acceptance criteria.
 
+### 🧩 Required Skills & Rules
+- **Primary Skill**: `testing`
+- **Secondary Skills**: `development`, `docs-analysis` (to sync test docs)
+- **Global Rules**: `@general.instructions.md` (Verification & DoD section)
+
 ### 1. Acceptance Testing (per Story)
 - [ ] **AC Validation**: Systematically verify each Acceptance Criterion (AC) defined in the BA workflow.
 - [ ] **Iteration Data**: Use factories to generate the specific data needed for the story's scenarios.

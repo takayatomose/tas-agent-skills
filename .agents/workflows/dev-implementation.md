@@ -4,6 +4,12 @@ description: Iterative enterprise implementation focused on delivering single Us
 
 Follow this workflow during the execution of a specific User Story or task increment.
 
+### 🧩 Required Skills & Rules
+- **Primary Skill**: Language-specific (e.g., `nestjs`, `java`)
+- **Secondary Skills**: `architecture`, `development`, `database`, `general-patterns`
+- **Optional Skill**: `ui-ux-pro-max` (if the story involves UI changes)
+- **Global Rules**: `@general.instructions.md` (Language-Specific Rules section)
+
 ### 1. Story Scaffolding
 - [ ] **Typed Contracts**: Implement DTOs and Interfaces specific to the story. No `any`.
 - [ ] **Incremental Domain**: Update entities with only the domain logic required for this increment.
