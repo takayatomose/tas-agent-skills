@@ -30,37 +30,35 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
-
-      - name: Set binary name
-        id: vars
-        run: |
-          BINARY="tas-agent-${{ matrix.goos }}-${{ matrix.goarch }}"
-          [[ "${{ matrix.goos }}" == "windows" ]] && BINARY="${BINARY}.exe"
-          echo "binary=${BINARY}" >> "$GITHUB_OUTPUT"
-          echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          echo "commit=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-          echo "build_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          go-version: "1.21"
 
       - name: Build
         env:
-          GOOS:   ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
+          GOOS:        ${{ matrix.goos }}
+          GOARCH:      ${{ matrix.goarch }}
           CGO_ENABLED: "0"
         run: |
+          BINARY="tas-agent-${{ matrix.goos }}-${{ matrix.goarch }}"
+          if [ "${{ matrix.goos }}" = "windows" ]; then BINARY="${BINARY}.exe"; fi
+
+          COMMIT=$(git rev-parse --short HEAD)
+          BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          VERSION="${GITHUB_REF_NAME}"
+          PKG="github.com/trungtran/tas-agent/internal/version"
+
+          mkdir -p dist
           go build \
-            -ldflags "-s -w \
-              -X github.com/trungtran/tas-agent/internal/version.Version=${{ steps.vars.outputs.version }} \
-              -X github.com/trungtran/tas-agent/internal/version.Commit=${{ steps.vars.outputs.commit }} \
-              -X github.com/trungtran/tas-agent/internal/version.BuildDate=${{ steps.vars.outputs.build_date }}" \
-            -o "dist/${{ steps.vars.outputs.binary }}" \
+            -ldflags "-s -w -X ${PKG}.Version=${VERSION} -X ${PKG}.Commit=${COMMIT} -X ${PKG}.BuildDate=${BUILD_DATE}" \
+            -o "dist/${BINARY}" \
             ./cmd/tas-agent
+
+          echo "BINARY=${BINARY}" >> "$GITHUB_ENV"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.vars.outputs.binary }}
-          path: dist/${{ steps.vars.outputs.binary }}
+          name: ${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/
           retention-days: 1
 
   release:
@@ -78,11 +76,12 @@ jobs:
           path: dist
           merge-multiple: true
 
+      - name: List dist files
+        run: ls -lh dist/
+
       - name: Generate checksums
         working-directory: dist
-        run: |
-          sha256sum tas-agent-* > checksums.txt
-          cat checksums.txt
+        run: sha256sum tas-agent-* > checksums.txt && cat checksums.txt
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -116,3 +115,4 @@ jobs:
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
+
