@@ -215,6 +215,58 @@ make clean
 
 ---
 
+## 🔄 Version Management
+
+### Bumping Version
+
+The version is defined in the `VERSION` file (semver format). To release a new version:
+
+**Quick way (using Makefile):**
+```bash
+make tag VERSION=v0.2.0
+```
+
+This automatically:
+- Updates `VERSION` file to `0.2.0`
+- Commits the change
+- Creates git tag `v0.2.0`
+- Pushes to GitHub (triggers CI/CD)
+
+**Manual way:**
+```bash
+# 1. Update VERSION file
+echo "0.2.0" > VERSION
+
+# 2. Commit
+git add VERSION
+git commit -m "chore: bump version to 0.2.0"
+git push origin main
+
+# 3. Create and push tag (triggers release)
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+### Automatic Release Process
+
+When you push a tag `v*.*.*`:
+
+1. **Build Job** — Compiles for all 5 platforms (15-30 seconds)
+2. **Release Job** — Creates GitHub Release with:
+   - Binaries for darwin/linux/windows × amd64/arm64
+   - `checksums.txt` (SHA256 hashes)
+   - Installation instructions
+3. **Available at** — https://github.com/takayatomose/tas-agent-skills/releases
+
+Users can then install the new version:
+```bash
+curl -fsSL https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.sh | sh
+tas-agent check-update  # detects new version
+tas-agent self-update   # auto-upgrade
+```
+
+---
+
 ## 🔄 Continuous Integration
 
 GitHub Actions automatically builds and releases on tag push:
