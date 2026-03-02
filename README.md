@@ -1,91 +1,285 @@
-# tas-agent-skills
+# tas-agent
 
-A centralized, standardized repository of **Rules**, **Skills**, and **Workflows** designed to empower AI agents with senior-level professional engineering capabilities. Optimized for modern full-stack development using Clean Architecture, Event-Driven patterns, and Agile methodologies.
+A **CLI tool** for installing AI agent skills, rules, and workflows into any project for GitHub Copilot & Antigravity.
 
-## 🎯 Core Philosophy
+Built in Go, cross-platform, zero dependencies. Single binary (~7MB) with embedded skills + rules + workflows.
 
-This repository transforms AI agents from simple code assistants into **Senior Engineering Partners**. It achieves this through a structured system of:
-- **Expertise (Skills)**: Personas with deep strategic knowledge (e.g., `nestjs`, `architecture`, `ui-ux-pro-max`).
-- **Constraints (Rules)**: Technical standards and project-specific mandates (e.g., `general.instructions.md`).
-- **Processes (Workflows)**: Standardized delivery lifecycles (e.g., `full-lifecycle-delivery`).
-
----
-
-## 📂 System Structure
-
-### ⚖️ Rules (`.agents/rules/`)
-Global technical mandates that enforce quality across the workspace.
-- **[general.instructions.md](.agents/rules/general.instructions.md)**: The single source of truth for all projects. This file is symlinked to `.github/copilot-instructions.md` to ensure context consistency between Antigravity, VSCode, and GitHub Copilot.
-
-### 🧠 Skills (`.agents/skills/`)
-Expert personas and deep knowledge domains. These are loaded by name (e.g., `@nestjs`).
-- **`architecture`**: Specialist in Clean Architecture, layers, and module structure.
-- **`development`**: Expert in business logic, use cases, and SOLID principles.
-- **`database`**: Specialist in schema design, migrations, and performance (Postgres, Mongo, Redis).
-- **`ui-ux-pro-max`**: (Premium) Advanced design system generator and UI/UX reasoning engine.
-- **Language Skills**: `nestjs` (TS), `java` (Spring), `golang`, `rust`, `python`, `dart`.
-
-### 🔄 Workflows (`.agents/workflows/`)
-Step-by-step lifecycles for predictable delivery.
-- **`/ba-requirement-analysis`**: Story mapping and MVP slicing.
-- **`/dev-implementation`**: Iterative implementation and CI/CD alignment.
-- **`/qa-testing`**: Acceptance-based verification.
-- **`/full-lifecycle-delivery`**: The master orchestrator for complex features.
-
----
-
-## ✨ Featured: UI/UX Pro Max
-
-The system includes a specialized **UI/UX Reasoning Engine** that uses Python-based search to generate tailored design systems:
-- **67+ UI Styles**: Glassmorphism, Bento Grid, AI-Native UI, etc.
-- **96+ Color Palettes**: Industry-specific for SaaS, Fintech, Healthcare.
-- **Reasoning Rules**: Industry-appropriate patterns and anti-patterns.
-- **Pre-delivery Checklists**: Ensuring professional quality and accessibility.
-
-**Usage:**
 ```bash
-python3 .agents/skills/ui-ux-pro-max/scripts/search.py "Healthcare SaaS" --design-system
+# Install
+curl -fsSL https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.sh | sh
+# or (Windows PowerShell)
+irm https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.ps1 | iex
+
+# Use
+cd /path/to/your/project
+tas-agent install be        # backend
+tas-agent install fe        # frontend
+tas-agent install fullstack # full-stack
+tas-agent update            # re-sync skills (reads last profile from manifest)
+tas-agent check-update      # check for CLI updates
+tas-agent self-update       # auto-upgrade to latest CLI version
 ```
 
 ---
 
-## 🏗️ Technical Methodologies
+## 🎯 What It Does
 
-### 1. Clean Architecture & DDD
-Strict layering: **Presentation → Application → Domain ← Infrastructure**. We prioritize the Domain as the core, with zero external dependencies.
+The **tas-agent CLI** distributes a **centralized engineering knowledge system** to your projects:
 
-### 2. Event-Driven Architecture
-- **Transactional Outbox**: Atomic updates between DB and Event Bus.
-- **Loose Coupling**: No direct cross-module service calls; communication via Domain Events.
-
-### 3. Multi-Tenant Isolation
-- **Context-Aware**: Every request carries tenant context (company_id).
-- **Security**: Mandatory tenant validation at the Application and Repository layers.
+- **20+ Skills**: Language-specific expertise (NestJS, Java, Go, Python, Rust, C, Dart, React, Vue, etc.)
+- **Architecture Guidance**: Clean Architecture, event-driven design, multi-tenancy patterns
+- **Professional Standards**: Error codes, testing, documentation, UI/UX design systems
+- **AI Agent Workflows**: BA analysis, development, QA, full lifecycle delivery
+- **One-command setup**: `tas-agent install be` → project gets `.agents/` + `.github/copilot-instructions.md`
 
 ---
 
-## 📖 How to Use
+## 📦 Installation
 
-### For Antigravity & AI Agents
-1. **Initialize**: The agent automatically loads `general.instructions.md`.
-2. **Leverage Skills**: Call skills by name to inherit deep patterns.
-3. **Follow Workflows**: Start complex tasks using slash commands (e.g., `/ba-requirement-analysis`).
+### Quick Start (macOS / Linux)
+```bash
+curl -fsSL https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.sh | sh
+```
 
-### For GitHub Copilot
-The system is automatically enabled via `.github/copilot-instructions.md`. To refresh context, just mention the desired skill in your prompt.
+### Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.ps1 | iex
+```
 
-### Cross-Platform Support
-The symlink between `.agents/rules/general.instructions.md` and `.github/copilot-instructions.md` uses relative paths, ensuring it works seamlessly on **macOS, Linux, and Windows**.
+### Manual Download
+Download binary from [GitHub Releases](https://github.com/hiimtrung/ai-agent-ide/releases) and add to `PATH`.
+
+### From Source
+```bash
+git clone https://github.com/hiimtrung/ai-agent-ide.git
+cd ai-agent-ide
+make build
+make install-user  # or 'make install' for /usr/local/bin (requires sudo)
+```
 
 ---
 
-## 🛡️ Workspace Safety
-- **Sandbox**: Agents are restricted to the workspace root.
-- **Forbidden Paths**: No access to OS-sensitive directories or user configs.
-- **Validation**: All file operations are validated against project-safe structures.
+## 🚀 Usage
+
+### Profiles
+
+| Profile | For | Skills Included |
+|---------|-----|---|
+| `be` | Backend (NestJS, Java, Go, Python, Rust, C, Dart) | Core + language-specific |
+| `fe` | Frontend (React, Next.js, Vue, Svelte, React Native) | Core + UI frameworks + design |
+| `fullstack` | Full-stack projects | be + fe |
+| `all` | Everything | All skills, rules, workflows |
+
+Or install **individual skills** by name:
+```bash
+tas-agent install golang
+tas-agent install nestjs
+tas-agent install react-best-practices
+```
+
+### Commands
+
+```bash
+# Install skills to a project
+tas-agent install <profile> [flags]
+  --target, -t <dir>  Target directory (default: current directory)
+  --force, -f         Overwrite existing files
+  --dry-run           Preview without modifying
+
+# Update installed skills (reads from manifest if no profile given)
+tas-agent update [profile] [flags]
+  --target, -t <dir>
+  --dry-run
+
+# List profiles and skills
+tas-agent list              # all profiles + skills
+tas-agent list be           # details for 'be' profile
+
+# Version & updates
+tas-agent version           # show version + commit + build date
+tas-agent check-update      # check for new CLI version on GitHub
+tas-agent self-update       # download and auto-upgrade CLI
+
+# Help
+tas-agent help
+```
+
+### Examples
+
+```bash
+# Install backend stack to current directory
+tas-agent install be
+
+# Install frontend to a specific path
+tas-agent install fe --target ./frontend-app
+
+# Preview without making changes
+tas-agent install fullstack --dry-run --target /tmp/test
+
+# Update all skills to latest (from last install)
+cd /my/project
+tas-agent update
+
+# Update to a different profile
+tas-agent update fe --force
+
+# Check for CLI updates
+tas-agent check-update
+```
 
 ---
 
-**Last Updated**: February 2026
-**System**: tas-agent-skills (Unified AI Development Guidance)
+## 📂 What Gets Installed
+
+After `tas-agent install be`, your project structure includes:
+
+```
+.agents/
+  skills/
+    architecture/
+      SKILL.md
+      rules/
+        principles.md
+    nestjs/
+      SKILL.md
+      rules/
+        typescript.md
+        errors.md
+    golang/
+      ...
+    [19 more skills]
+  rules/
+    general.instructions.md  # unified coding standards
+  workflows/
+    ba-requirement-analysis.md
+    dev-implementation.md
+    qa-testing.md
+    full-lifecycle-delivery.md
+  .tas-agent.json           # manifest: version, profile, skills, installed_at
+
+.github/
+  copilot-instructions.md   # GitHub Copilot context (auto-generated from rules)
+  agents/
+    tas-agent.agent.md      # custom agent definition
+```
+
+**Manifest** (`.agents/.tas-agent.json`):
+```json
+{
+  "version": "v0.1.0",
+  "profile": "be",
+  "skills": [
+    "architecture",
+    "general-patterns",
+    ...
+  ],
+  "installed_at": "2026-03-02T03:45:34Z"
+}
+```
+
+This allows `tas-agent update` to re-sync skills without specifying a profile.
+
+---
+
+## 🛠️ Development & Building
+
+### Prerequisites
+- Go 1.26.0+
+- Make (optional, but recommended)
+
+### Build for current platform
+```bash
+make build          # creates dist/tas-agent
+```
+
+### Build for all platforms
+```bash
+make build-all      # creates:
+                    # - dist/tas-agent-darwin-amd64
+                    # - dist/tas-agent-darwin-arm64
+                    # - dist/tas-agent-linux-amd64
+                    # - dist/tas-agent-linux-arm64
+                    # - dist/tas-agent-windows-amd64.exe
+```
+
+### Create a release (push to GitHub)
+```bash
+make tag VERSION=v0.1.0  # creates git tag and pushes
+                         # GitHub Actions automatically builds & releases
+```
+
+### Clean up
+```bash
+make clean
+```
+
+---
+
+## 🔄 Continuous Integration
+
+GitHub Actions automatically builds and releases on tag push:
+
+1. **Trigger**: Push a tag matching `v*.*.*` (e.g., `v0.1.0`)
+2. **Build**: Compiles for 5 platforms (macOS arm64/amd64, Linux arm64/amd64, Windows amd64)
+3. **Release**: Creates GitHub Release with binaries, checksums, and install instructions
+4. **Details**: See [.github/workflows/release.yml](.github/workflows/release.yml)
+
+---
+
+## 📚 Included Skills
+
+### Core (All Profiles)
+- **architecture** — Clean Architecture, layers, DDD
+- **general-patterns** — Error codes, exceptions, HTTP status, cross-language patterns
+- **development** — Use cases, domain events, validation
+- **database** — PostgreSQL, MongoDB, Redis, migrations, repositories
+- **testing** — Unit, integration, E2E, Jest, Mockito
+- **docs-analysis** — Documentation standards
+
+### Backend
+- **nestjs** — NestJS, TypeScript, type safety
+- **java** — Spring Boot, Gradle, enterprise patterns
+- **golang** — Concurrent Go services, interfaces, idioms
+- **python** — Type hints, Pydantic, Clean Architecture
+- **rust** — Ownership, Result types, Actix/Axum
+- **c** — Memory safety, modular development
+- **dart** — Flutter, sound null safety
+
+### Frontend
+- **frontend** — UI engineering, SSR/CSR, design systems
+- **react-best-practices** — React 19, Next.js performance, bundle optimization
+- **react-native-skills** — React Native, Expo, mobile performance
+- **composition-patterns** — Component architecture, render props, compound components
+- **web-design-guidelines** — Accessibility, Web Interface Guidelines
+- **ui-ux-pro-max** — Design system generator, 96+ color palettes, 67+ UI styles
+
+---
+
+## 🎓 System Philosophy
+
+This is not just a skill library—it's a **unified engineering knowledge system** built for AI agents (Copilot, Antigravity, etc.):
+
+- **Consistency**: One source of truth for architecture, error codes, and patterns
+- **Reusability**: Embed the entire system into any project with a single command
+- **Scalability**: 20+ skills, 99+ UX guidelines, standardized workflows
+- **Autonomy**: AI agents inherit senior-level decision-making without human intervention
+- **Transparency**: All rules, skills, and workflows are version-controlled and auditable
+
+---
+
+## 📝 License
+
+MIT
+
+---
+
+## 🤝 Contributing
+
+Issues and pull requests welcome! For major changes, open a discussion first.
+
+---
+
+**Last Updated**: March 2026
+**System**: tas-agent (Unified AI Development Guidance CLI)
 **Status**: Production Ready
+**Built with**: Go 1.26.0
