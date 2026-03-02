@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.goos }}/${{ matrix.goarch }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { goos: darwin,  goarch: amd64 }
+          - { goos: darwin,  goarch: arm64 }
+          - { goos: linux,   goarch: amd64 }
+          - { goos: linux,   goarch: arm64 }
+          - { goos: windows, goarch: amd64 }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Set binary name
+        id: vars
+        run: |
+          BINARY="tas-agent-${{ matrix.goos }}-${{ matrix.goarch }}"
+          [[ "${{ matrix.goos }}" == "windows" ]] && BINARY="${BINARY}.exe"
+          echo "binary=${BINARY}" >> "$GITHUB_OUTPUT"
+          echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          echo "build_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        env:
+          GOOS:   ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: "0"
+        run: |
+          go build \
+            -ldflags "-s -w \
+              -X github.com/trungtran/tas-agent/internal/version.Version=${{ steps.vars.outputs.version }} \
+              -X github.com/trungtran/tas-agent/internal/version.Commit=${{ steps.vars.outputs.commit }} \
+              -X github.com/trungtran/tas-agent/internal/version.BuildDate=${{ steps.vars.outputs.build_date }}" \
+            -o "dist/${{ steps.vars.outputs.binary }}" \
+            ./cmd/tas-agent
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.binary }}
+          path: dist/${{ steps.vars.outputs.binary }}
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Generate checksums
+        working-directory: dist
+        run: |
+          sha256sum tas-agent-* > checksums.txt
+          cat checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "tas-agent ${{ github.ref_name }}"
+          body: |
+            ## Install
+
+            ### macOS / Linux
+            ```sh
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | sh
+            ```
+
+            ### Windows (PowerShell)
+            ```powershell
+            irm https://raw.githubusercontent.com/${{ github.repository }}/main/install.ps1 | iex
+            ```
+
+            ### Manual download
+            Pick the binary for your platform below and put it in your `PATH`.
+
+            ---
+            **Checksums**: See `checksums.txt` attached below.
+          files: |
+            dist/tas-agent-darwin-amd64
+            dist/tas-agent-darwin-arm64
+            dist/tas-agent-linux-amd64
+            dist/tas-agent-linux-arm64
+            dist/tas-agent-windows-amd64.exe
+            dist/checksums.txt
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true

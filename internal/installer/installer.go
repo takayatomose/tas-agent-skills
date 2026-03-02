@@ -2,14 +2,40 @@ package installer
 
 import (
 	"embed"
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/trungtran/tas-agent/internal/profiles"
+	"github.com/trungtran/tas-agent/internal/version"
 )
+
+const ManifestPath = ".agents/.tas-agent.json"
+
+// Manifest records what was installed, enabling update without specifying a profile.
+type Manifest struct {
+	Version     string    `json:"version"`
+	Profile     string    `json:"profile"`
+	Skills      []string  `json:"skills"`
+	InstalledAt time.Time `json:"installed_at"`
+}
+
+// ReadManifest reads the manifest from targetDir, if present.
+func ReadManifest(targetDir string) (*Manifest, error) {
+	data, err := os.ReadFile(filepath.Join(targetDir, ManifestPath))
+	if err != nil {
+		return nil, err
+	}
+	var m Manifest
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, err
+	}
+	return &m, nil
+}
 
 // Options controls installer behavior.
 type Options struct {
@@ -58,6 +84,12 @@ func Install(agentFS embed.FS, profile profiles.Profile, targetDir string, opts 
 
 	if err := generateCopilotInstructions(agentFS, targetDir, opts, result); err != nil {
 		return err
+	}
+
+	if !opts.DryRun {
+		if err := writeManifest(targetDir, profile); err != nil {
+			fmt.Printf("  Warning: failed to write manifest: %v\n", err)
+		}
 	}
 
 	printSummary(result, opts, targetDir)
@@ -226,6 +258,28 @@ func writeFileContent(data []byte, dstPath, display string, opts Options, result
 		result.Created = append(result.Created, display)
 	}
 	return nil
+}
+
+func writeManifest(targetDir string, profile profiles.Profile) error {
+	skills := profile.Skills
+	if len(skills) == 1 && skills[0] == "all" {
+		skills = profiles.AllSkills
+	}
+	m := Manifest{
+		Version:     version.Version,
+		Profile:     profile.Name,
+		Skills:      skills,
+		InstalledAt: time.Now().UTC(),
+	}
+	data, err := json.MarshalIndent(m, "", "  ")
+	if err != nil {
+		return err
+	}
+	dest := filepath.Join(targetDir, ManifestPath)
+	if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
+		return err
+	}
+	return os.WriteFile(dest, data, 0o644)
 }
 
 func printSummary(result *Result, opts Options, targetDir string) {

@@ -1,10 +1,13 @@
 BINARY  := tas-agent
 CMD     := ./cmd/tas-agent
 DIST    := dist
+PKG     := github.com/trungtran/tas-agent/internal/version
 
 # Version from git tag or "dev"
-VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-LDFLAGS := -ldflags "-X main.version=$(VERSION) -s -w"
+VERSION    := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+COMMIT     := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+BUILD_DATE := $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
+LDFLAGS    := -ldflags "-X $(PKG).Version=$(VERSION) -X $(PKG).Commit=$(COMMIT) -X $(PKG).BuildDate=$(BUILD_DATE) -s -w"
 
 .PHONY: build build-all install clean test
 
@@ -57,3 +60,10 @@ test: build
 
 help:
 	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/## /  /'
+
+## tag: Create and push a new version tag (usage: make tag VERSION=v0.1.0)
+tag:
+	@test -n "$(VERSION)" || (echo "Usage: make tag VERSION=v0.1.0" && exit 1)
+	git tag -a $(VERSION) -m "Release $(VERSION)"
+	git push origin $(VERSION)
+	@echo "Tagged and pushed $(VERSION) — GitHub Actions will build and release."
