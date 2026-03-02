@@ -193,8 +193,9 @@ func writeFile(agentFS embed.FS, srcPath, dstPath string, opts Options, result *
 	return nil
 }
 
-// generateCopilotInstructions creates .github/copilot-instructions.md from the
-// embedded general.instructions.md (frontmatter is stripped for Copilot compatibility).
+// generateCopilotInstructions reads general.instructions.md from embedded files
+// and merges it with the destination's copilot-instructions.md file.
+// If destination doesn't exist, creates it. If it does, appends new content.
 func generateCopilotInstructions(agentFS embed.FS, targetDir string, opts Options, result *Result) error {
 	data, err := agentFS.ReadFile(".agents/rules/general.instructions.md")
 	if err != nil {
@@ -205,8 +206,47 @@ func generateCopilotInstructions(agentFS embed.FS, targetDir string, opts Option
 	dstPath := filepath.Join(targetDir, ".github", "copilot-instructions.md")
 	display, _ := filepath.Rel(targetDir, dstPath)
 
-	fmt.Println("  Generating .github/copilot-instructions.md...")
-	return writeFileContent([]byte(content), dstPath, display, opts, result)
+	fmt.Println("  Merging .github/copilot-instructions.md...")
+
+	if opts.DryRun {
+		_, statErr := os.Stat(dstPath)
+		if statErr == nil {
+			fmt.Printf("    ~ %s (append)\n", display)
+			result.Updated = append(result.Updated, display)
+		} else {
+			fmt.Printf("    + %s\n", display)
+			result.Created = append(result.Created, display)
+		}
+		return nil
+	}
+
+	if err := os.MkdirAll(filepath.Dir(dstPath), 0o755); err != nil {
+		return err
+	}
+
+	// Check if file exists; if so, append
+	existingData, err := os.ReadFile(dstPath)
+	var finalContent []byte
+
+	if err == nil {
+		// File exists: append new content with separator
+		finalContent = append(existingData, []byte("\n\n---\n\n")...)
+		finalContent = append(finalContent, []byte(content)...)
+		if err := os.WriteFile(dstPath, finalContent, 0o644); err != nil {
+			return fmt.Errorf("failed to write %s: %w", dstPath, err)
+		}
+		fmt.Printf("    ~ %s (append)\n", display)
+		result.Updated = append(result.Updated, display)
+	} else {
+		// File doesn't exist: create new
+		if err := os.WriteFile(dstPath, []byte(content), 0o644); err != nil {
+			return fmt.Errorf("failed to write %s: %w", dstPath, err)
+		}
+		fmt.Printf("    + %s\n", display)
+		result.Created = append(result.Created, display)
+	}
+
+	return nil
 }
 
 // stripFrontmatter removes the YAML frontmatter (--- ... ---) from markdown content.
