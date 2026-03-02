@@ -88,17 +88,16 @@ chmod +x "$TMP_FILE"
 
 DEST="${INSTALL_DIR}/${BINARY}"
 
-# Try to write to INSTALL_DIR; fall back to ~/bin if no permission
-if [ -w "$INSTALL_DIR" ] 2>/dev/null || mkdir -p "$INSTALL_DIR" 2>/dev/null; then
-  mv "$TMP_FILE" "$DEST"
-elif [ "$(id -u)" != "0" ]; then
-  # Try with sudo
+# Ensure INSTALL_DIR exists
+mkdir -p "$INSTALL_DIR" 2>/dev/null || true
+
+# Try to move to destination; use sudo if needed
+if mv "$TMP_FILE" "$DEST" 2>/dev/null; then
+  :
+else
+  # No permission; try with sudo
   echo "Installing to $INSTALL_DIR requires elevated permissions..."
   sudo mv "$TMP_FILE" "$DEST"
-else
-  echo "Error: cannot write to $INSTALL_DIR"
-  rm -f "$TMP_FILE"
-  exit 1
 fi
 
 echo ""
