@@ -2,13 +2,13 @@
 # install.sh — Install tas-agent CLI
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.sh | sh
-#   curl -fsSL https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.sh | sh -s -- --version v0.1.0
-#   curl -fsSL https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.sh | sh -s -- --dir ~/.local/bin
+#   curl -fsSL https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.sh | sh -s -- --version v0.1.0
+#   curl -fsSL https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.sh | sh -s -- --dir ~/.local/bin
 
 set -e
 
-REPO="hiimtrung/ai-agent-ide"
+REPO="takayatomose/tas-agent-skills"
 BINARY="tas-agent"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 VERSION=""

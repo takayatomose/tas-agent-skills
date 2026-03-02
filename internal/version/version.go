@@ -10,8 +10,8 @@ var (
 )
 
 const (
-	RepoOwner  = "hiimtrung"
-	RepoName   = "ai-agent-ide"
+	RepoOwner  = "takayatomose"
+	RepoName   = "tas-agent-skills"
 	BinaryName = "tas-agent"
 )
 

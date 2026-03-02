@@ -1,8 +1,8 @@
 # install.ps1 — Install tas-agent CLI on Windows
 #
 # Usage (run in PowerShell as Administrator or with -Scope CurrentUser):
-#   irm https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.ps1 | iex
-#   & ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.ps1'))) -Version v0.1.0
+#   irm https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.ps1 | iex
+#   & ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.ps1'))) -Version v0.1.0
 #
 param(
     [string]$Version = "",
@@ -10,7 +10,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Repo    = "hiimtrung/ai-agent-ide"
+$Repo    = "takayatomose/tas-agent-skills"
 $Binary  = "tas-agent"
 $Asset   = "${Binary}-windows-amd64.exe"
 

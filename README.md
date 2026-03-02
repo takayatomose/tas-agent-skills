@@ -6,9 +6,9 @@ Built in Go, cross-platform, zero dependencies. Single binary (~7MB) with embedd
 
 ```bash
 # Install
-curl -fsSL https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.sh | sh
 # or (Windows PowerShell)
-irm https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.ps1 | iex
 
 # Use
 cd /path/to/your/project
@@ -38,21 +38,21 @@ The **tas-agent CLI** distributes a **centralized engineering knowledge system**
 
 ### Quick Start (macOS / Linux)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.sh | sh
 ```
 
 ### Windows (PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/hiimtrung/ai-agent-ide/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/takayatomose/tas-agent-skills/main/install.ps1 | iex
 ```
 
 ### Manual Download
-Download binary from [GitHub Releases](https://github.com/hiimtrung/ai-agent-ide/releases) and add to `PATH`.
+Download binary from [GitHub Releases](https://github.com/takayatomose/tas-agent-skills/releases) and add to `PATH`.
 
 ### From Source
 ```bash
-git clone https://github.com/hiimtrung/ai-agent-ide.git
-cd ai-agent-ide
+git clone https://github.com/takayatomose/tas-agent-skills.git
+cd tas-agent-skills
 make build
 make install-user  # or 'make install' for /usr/local/bin (requires sudo)
 ```
