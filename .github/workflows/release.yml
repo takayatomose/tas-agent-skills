@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -15,10 +15,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - { goos: darwin,  goarch: amd64 }
-          - { goos: darwin,  goarch: arm64 }
-          - { goos: linux,   goarch: amd64 }
-          - { goos: linux,   goarch: arm64 }
+          - { goos: darwin, goarch: amd64 }
+          - { goos: darwin, goarch: arm64 }
+          - { goos: linux, goarch: amd64 }
+          - { goos: linux, goarch: arm64 }
           - { goos: windows, goarch: amd64 }
 
     steps:
@@ -34,8 +34,8 @@ jobs:
 
       - name: Build
         env:
-          GOOS:        ${{ matrix.goos }}
-          GOARCH:      ${{ matrix.goarch }}
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: "0"
         run: |
           BINARY="tas-agent-${{ matrix.goos }}-${{ matrix.goarch }}"
@@ -115,4 +115,3 @@ jobs:
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
-
