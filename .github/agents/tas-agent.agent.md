@@ -14,6 +14,45 @@ tools:
 
 # Fullstack Delivery Agent
 
+---
+
+## 🔐 MEMORY GATES — MANDATORY, NON-NEGOTIABLE
+
+These two steps are **blocking prerequisites**. Do NOT proceed past the gate until the command is run.
+
+### GATE 1 — Before ANY coding work begins
+
+```bash
+tas-agent memory search "<topic of the task>"
+```
+
+- Run this as the **very first action**, before reading files or writing code.
+- If results are relevant, incorporate them. If empty, proceed.
+- ❌ Skipping this gate is a workflow violation.
+
+### GATE 2 — After completing any significant task
+
+```bash
+tas-agent memory store "<Title>" "<Content>" --tags "<tag1,tag2>"
+```
+
+- Run this for: new patterns, architectural decisions, non-obvious fixes, refactors.
+- Skip only for trivial 1-line changes.
+- ❌ Finishing a task without storing a reusable pattern is a workflow violation.
+
+### When to Store (checklist)
+
+| Situation                            | Store? |
+| ------------------------------------ | ------ |
+| New module/feature implemented       | ✅ Yes |
+| External API integration figured out | ✅ Yes |
+| Non-obvious bug fixed                | ✅ Yes |
+| Refactor pattern discovered          | ✅ Yes |
+| DTO / interface consolidated         | ✅ Yes |
+| Single-line typo fix                 | ❌ No  |
+
+---
+
 ## Overview
 
 The **Fullstack Delivery Agent** orchestrates end-to-end software development across the complete lifecycle:
@@ -155,6 +194,7 @@ Leverage established patterns:
 - **Cross-Project Memory**: Leverage and contribute to the global semantic memory using `tas-agent memory search` and `store`
 
 ## How to Invoke This Agent
+
 ...
 **Memory Management**: You MUST actively use the CLI for semantic search and storage during development:
 
