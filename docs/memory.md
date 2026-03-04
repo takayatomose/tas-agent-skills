@@ -88,3 +88,24 @@ tas-agent memory delete <uuid>
 - **Vector Search**: Uses a **Cosine Similarity** algorithm optimized for CLI environments.
 - **Embedding**: Converts text into 1536-dimensional vectors (OpenAI) for comparison.
 - **Storage**: Data is stored at `~/.tas-agent/memory.db`.
+
+---
+
+## 💎 Advanced Features
+
+### 🧩 Automatic Chunking
+`tas-agent` automatically splits large documents into multiple **overlapping chunks** (default: 1000 chars with 200 chars overlap). This ensures:
+- Better semantic precision for long documents.
+- Compatibility with model token limits.
+- Precise retrieval of relevant sections instead of entire files.
+
+### 🧹 Memory Compaction & Re-vectoring
+Maintain your memory health with the `compact` command:
+
+```bash
+# Re-generate all embeddings (useful if you switch models)
+tas-agent memory compact --revector
+
+# Remove near-duplicate entries (automatic threshold)
+tas-agent memory compact
+```

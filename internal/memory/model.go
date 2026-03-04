@@ -7,11 +7,13 @@ import (
 
 // Knowledge represents a single piece of stored information
 type Knowledge struct {
-	ID              string    `json:"id"`
-	Title           string    `json:"title"`
-	Content         string    `json:"content"`
-	Tags            []string  `json:"tags"`
-	Scope           string    `json:"scope"`
+	ID              string   `json:"id"`
+	Title           string   `json:"title"`
+	Content         string   `json:"content"`
+	Tags            []string `json:"tags"`
+	Scope           string   `json:"scope"`
+	ParentID        string
+	ChunkIndex      int
 	NormalizedTitle string    `json:"normalized_title"`
 	ContentHash     string    `json:"content_hash"`
 	Vector          []float32 `json:"vector,omitempty"`

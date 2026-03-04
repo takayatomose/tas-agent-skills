@@ -17,43 +17,33 @@ import (
 	"github.com/trungtran/tas-agent/internal/version"
 )
 
-const usage = `tas-agent — Install AI agent skills, rules, and workflows into your project.
+const usage = `tas-agent — Professional AI Agent Orchestration CLI
 
 USAGE:
-  tas-agent <command> [flags]
+  tas-agent <command> [arguments] [flags]
 
-COMMANDS:
-  install <profile>   Install skills and rules for a profile
-  update [profile]    Re-install / update skills (force overwrite)
-  list [profile]      List available profiles and skills
-  version             Show version information
-  check-update        Check for a new CLI version on GitHub
-  self-update         Download and replace with the latest CLI version
-  memory              Manage agent memory (store, search, list, delete)
+CORE COMMANDS:
+  install <profile>   Install agent skills, rules, and workflows (e.g., 'be', 'fe', 'golang')
+  update [profile]    Sync/Force-update existing project configuration
+  list [profile]      Explore available profiles or specific skill details
+  version             Display CLI version and build information
 
-INSTALL / UPDATE FLAGS:
-  --target, -t <dir>  Target directory (default: current directory)
-  --force, -f         Overwrite existing files (install only)
-  --dry-run           Show what would be changed without modifying files
+MAINTENANCE:
+  check-update        Search for newer versions on GitHub
+  self-update         Upgrade tas-agent to the latest version automatically
+  memory              Manage semantic memory (Vector DB)
 
-PROFILES:
-  be         Backend (NestJS, Java, Go, Python, Rust, C, Dart)
-  fe         Frontend (React, Next.js, Vue, Svelte, React Native)
-  fullstack  Full-stack (backend + frontend)
-  all        Everything
-
-  Individual skills can also be used:
-    tas-agent install golang
-    tas-agent update nestjs
+GLOBAL FLAGS:
+  --target, -t <dir>  Path to project directory (default: ".")
+  --help, -h          Show this help message
 
 EXAMPLES:
-  tas-agent install be
-  tas-agent install fe --target ./my-project
-  tas-agent update                  # re-installs using last profile from manifest
-  tas-agent update be --dry-run
-  tas-agent list
-  tas-agent check-update
-  tas-agent self-update
+  tas-agent install be                # Setup backend patterns
+  tas-agent update                    # Refresh current project skills
+  tas-agent memory search "auth"      # Search semantic memory
+  tas-agent --version                 # Check version
+
+Run 'tas-agent <command> --help' for specific command details.
 `
 
 func main() {
@@ -283,9 +273,17 @@ func resolveTargetDir(flag string) string {
 // ── memory ────────────────────────────────────────────────────────────────────
 
 func runMemory(args []string) {
-	if len(args) < 1 {
-		fmt.Fprintln(os.Stderr, "Usage: tas-agent memory <subcommand> [flags]")
-		fmt.Fprintln(os.Stderr, "Subcommands: store, search, list, delete")
+	if len(args) < 1 || args[0] == "-h" || args[0] == "--help" || args[0] == "help" {
+		fmt.Fprintln(os.Stderr, "Usage: tas-agent memory <subcommand> [arguments] [flags]")
+		fmt.Fprintln(os.Stderr, "\nSUBCOMMANDS:")
+		fmt.Fprintln(os.Stderr, "  store <title> <content>   Save a new memory (semantic chunking enabled)")
+		fmt.Fprintln(os.Stderr, "  search <query>            Search memory using semantic similarity")
+		fmt.Fprintln(os.Stderr, "  list                      List recent memory entries")
+		fmt.Fprintln(os.Stderr, "  delete <id>               Remove a memory by its ID")
+		fmt.Fprintln(os.Stderr, "  compact                   Optimize DB (re-vectoring, duplicate removal)")
+		fmt.Fprintln(os.Stderr, "\nEXAMPLES:")
+		fmt.Fprintln(os.Stderr, "  tas-agent memory store \"Go Interfaces\" \"Context on interfaces...\" --tags \"go,pattern\"")
+		fmt.Fprintln(os.Stderr, "  tas-agent memory search \"how to handle errors\" --limit 3")
 		os.Exit(1)
 	}
 
@@ -299,6 +297,8 @@ func runMemory(args []string) {
 		runMemoryList(args[1:])
 	case "delete":
 		runMemoryDelete(args[1:])
+	case "compact":
+		runMemoryCompact(args[1:])
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown memory subcommand %q\n", sub)
 		os.Exit(1)
@@ -381,8 +381,14 @@ func runMemoryStore(args []string) {
 	tags := fs.String("tags", "", "Comma-separated tags")
 	scope := fs.String("scope", "", "Memory scope")
 
+	fs.Usage = func() {
+		fmt.Fprintln(os.Stderr, "Usage: tas-agent memory store <title> <content> [flags]")
+		fmt.Fprintln(os.Stderr, "\nFLAGS:")
+		fs.PrintDefaults()
+	}
+
 	if len(args) < 2 {
-		fmt.Fprintln(os.Stderr, "Usage: tas-agent memory store <title> <content> [--tags t1,t2] [--scope s]")
+		fs.Usage()
 		os.Exit(1)
 	}
 
@@ -414,8 +420,14 @@ func runMemorySearch(args []string) {
 	limit := fs.Int("limit", 5, "Number of results to return")
 	scope := fs.String("scope", "", "Memory scope")
 
+	fs.Usage = func() {
+		fmt.Fprintln(os.Stderr, "Usage: tas-agent memory search <query> [flags]")
+		fmt.Fprintln(os.Stderr, "\nFLAGS:")
+		fs.PrintDefaults()
+	}
+
 	if len(args) < 1 {
-		fmt.Fprintln(os.Stderr, "Usage: tas-agent memory search <query> [--limit 5] [--scope s]")
+		fs.Usage()
 		os.Exit(1)
 	}
 
@@ -462,7 +474,7 @@ func runMemoryList(args []string) {
 }
 
 func runMemoryDelete(args []string) {
-	if len(args) < 1 {
+	if len(args) < 1 || args[0] == "-h" || args[0] == "--help" {
 		fmt.Fprintln(os.Stderr, "Usage: tas-agent memory delete <id>")
 		os.Exit(1)
 	}
@@ -484,4 +496,32 @@ func truncate(s string, max int) string {
 		return s
 	}
 	return s[:max] + "..."
+}
+func runMemoryCompact(args []string) {
+	fs := flag.NewFlagSet("memory compact", flag.ExitOnError)
+	threshold := fs.Float64("threshold", 0.0, "Similarity threshold for compaction (0.0 for auto)")
+	revector := fs.Bool("revector", false, "Re-generate all embeddings")
+
+	fs.Parse(args)
+
+	mgr := getMemoryManager()
+	defer mgr.Close()
+
+	if *revector {
+		fmt.Println("Re-vectoring all items... this may take a while.")
+		if err := mgr.Revector(context.Background()); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("Re-vectoring completed.")
+	}
+
+	t := float32(*threshold)
+	removed, err := mgr.Compact(context.Background(), t)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Compaction completed. Items removed: %d\n", removed)
 }

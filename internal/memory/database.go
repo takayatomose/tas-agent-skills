@@ -41,6 +41,8 @@ func (s *sqliteMemory) init() error {
 		content TEXT NOT NULL,
 		tags TEXT,
 		scope TEXT,
+		parent_id TEXT,
+		chunk_index INTEGER,
 		normalized_title TEXT,
 		content_hash TEXT,
 		vector BLOB,
@@ -49,6 +51,7 @@ func (s *sqliteMemory) init() error {
 	);
 	CREATE INDEX IF NOT EXISTS idx_knowledge_scope ON knowledge(scope);
 	CREATE INDEX IF NOT EXISTS idx_knowledge_hash ON knowledge(content_hash);
+	CREATE INDEX IF NOT EXISTS idx_knowledge_parent ON knowledge(parent_id);
 	`
 	_, err := s.db.Exec(query)
 	return err
@@ -59,18 +62,18 @@ func (s *sqliteMemory) Store(ctx context.Context, k *Knowledge) error {
 	vectorJSON, _ := json.Marshal(k.Vector)
 
 	query := `
-	INSERT INTO knowledge (id, title, content, tags, scope, normalized_title, content_hash, vector, created_at, updated_at)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	INSERT INTO knowledge (id, title, content, tags, scope, parent_id, chunk_index, normalized_title, content_hash, vector, created_at, updated_at)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 	_, err := s.db.ExecContext(ctx, query,
-		k.ID, k.Title, k.Content, string(tagsJSON), k.Scope,
+		k.ID, k.Title, k.Content, string(tagsJSON), k.Scope, k.ParentID, k.ChunkIndex,
 		k.NormalizedTitle, k.ContentHash, vectorJSON, k.CreatedAt, k.UpdatedAt,
 	)
 	return err
 }
 
 func (s *sqliteMemory) List(ctx context.Context, limit int, offset int) ([]Knowledge, error) {
-	query := `SELECT id, title, content, tags, scope, normalized_title, content_hash, created_at, updated_at FROM knowledge LIMIT ? OFFSET ?`
+	query := `SELECT id, title, content, tags, scope, parent_id, chunk_index, normalized_title, content_hash, created_at, updated_at FROM knowledge LIMIT ? OFFSET ?`
 	rows, err := s.db.QueryContext(ctx, query, limit, offset)
 	if err != nil {
 		return nil, err
@@ -81,7 +84,7 @@ func (s *sqliteMemory) List(ctx context.Context, limit int, offset int) ([]Knowl
 	for rows.Next() {
 		var k Knowledge
 		var tagsStr string
-		if err := rows.Scan(&k.ID, &k.Title, &k.Content, &tagsStr, &k.Scope, &k.NormalizedTitle, &k.ContentHash, &k.CreatedAt, &k.UpdatedAt); err != nil {
+		if err := rows.Scan(&k.ID, &k.Title, &k.Content, &tagsStr, &k.Scope, &k.ParentID, &k.ChunkIndex, &k.NormalizedTitle, &k.ContentHash, &k.CreatedAt, &k.UpdatedAt); err != nil {
 			return nil, err
 		}
 		json.Unmarshal([]byte(tagsStr), &k.Tags)
@@ -101,7 +104,7 @@ func (s *sqliteMemory) Close() error {
 
 // Search implements brute-force cosine similarity search
 func (s *sqliteMemory) Search(ctx context.Context, queryVector []float32, scope string, tags []string, limit int) ([]SearchResult, error) {
-	sqlQuery := `SELECT id, title, content, tags, scope, normalized_title, content_hash, vector, created_at, updated_at FROM knowledge`
+	sqlQuery := `SELECT id, title, content, tags, scope, parent_id, chunk_index, normalized_title, content_hash, vector, created_at, updated_at FROM knowledge`
 	var args []interface{}
 	if scope != "" {
 		sqlQuery += " WHERE scope = ?"
@@ -119,7 +122,7 @@ func (s *sqliteMemory) Search(ctx context.Context, queryVector []float32, scope 
 		var k Knowledge
 		var tagsStr string
 		var vectorBLOB []byte
-		if err := rows.Scan(&k.ID, &k.Title, &k.Content, &tagsStr, &k.Scope, &k.NormalizedTitle, &k.ContentHash, &vectorBLOB, &k.CreatedAt, &k.UpdatedAt); err != nil {
+		if err := rows.Scan(&k.ID, &k.Title, &k.Content, &tagsStr, &k.Scope, &k.ParentID, &k.ChunkIndex, &k.NormalizedTitle, &k.ContentHash, &vectorBLOB, &k.CreatedAt, &k.UpdatedAt); err != nil {
 			return nil, err
 		}
 		json.Unmarshal([]byte(tagsStr), &k.Tags)
