@@ -151,10 +151,13 @@ After `tas-agent install be`, your project structure includes:
   rules/
     general.instructions.md  # unified coding standards
   workflows/
-    ba-requirement-analysis.md
-    dev-implementation.md
+    new-requirement.md
+    execute-plan.md
     qa-testing.md
     full-lifecycle-delivery.md
+    remember.md
+    capture-knowledge.md
+    [8 more workflows]
   .tas-agent.json           # manifest: version, profile, skills, installed_at
 
 .github/

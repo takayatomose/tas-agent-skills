@@ -14,6 +14,42 @@ $Repo    = "takayatomose/tas-agent-skills"
 $Binary  = "tas-agent"
 $Asset   = "${Binary}-windows-amd64.exe"
 
+# ── Dependencies ──────────────────────────────────────────────────────────────
+
+function Check-Dependencies {
+    Write-Host "Checking dependencies..."
+
+    # Python3 check
+    if (Get-Command "python" -ErrorAction SilentlyContinue) {
+        $ver = python --version
+        Write-Host "✓ Python3 is installed ($ver)"
+    } else {
+        Write-Host "⚠ Python3 is not installed. Attempting to install via winget..."
+        if (Get-Command "winget" -ErrorAction SilentlyContinue) {
+            winget install -e --id Python.Python.3
+        } else {
+            Write-Error "winget not found. Please install Python 3 manually from https://python.org"
+            exit 1
+        }
+    }
+
+    # Ollama check
+    if (Get-Command "ollama" -ErrorAction SilentlyContinue) {
+        $ver = ollama --version
+        Write-Host "✓ Ollama is installed ($ver)"
+    } else {
+        Write-Host "⚠ Ollama is not installed. Attempting to install via winget..."
+        if (Get-Command "winget" -ErrorAction SilentlyContinue) {
+            winget install -e --id Ollama.Ollama
+        } else {
+            Write-Error "winget not found. Please install Ollama manually from https://ollama.com"
+            exit 1
+        }
+    }
+}
+
+Check-Dependencies
+
 # ── Resolve version ────────────────────────────────────────────────────────────
 if (-not $Version) {
     Write-Host "Fetching latest release..."
@@ -57,6 +93,28 @@ if ($UserPath -notlike "*$InstallDir*") {
 Write-Host ""
 Write-Host "✓ Installed: $Dest"
 Write-Host ""
+
+# ── Initialize Config ─────────────────────────────────────────────────────────
+
+$ConfigDir = Join-Path $env:USERPROFILE ".tas-agent"
+$ConfigFile = Join-Path $ConfigDir "config.json"
+
+if (-not (Test-Path $ConfigDir)) {
+    New-Item -ItemType Directory -Path $ConfigDir -Force | Out-Null
+}
+
+if (-not (Test-Path $ConfigFile)) {
+    Write-Host "Initializing default config at $ConfigFile..."
+    $DefaultConfig = @{
+        memory = @{
+            provider = "openai"
+            base_url = "http://localhost:11434/v1"
+            model = "nomic-embed-text"
+            api_key = "ollama"
+        }
+    }
+    $DefaultConfig | ConvertTo-Json -Depth 10 | Out-File $ConfigFile
+}
 Write-Host "Get started:"
 Write-Host "  $Binary install be        # backend project"
 Write-Host "  $Binary install fe        # frontend project"

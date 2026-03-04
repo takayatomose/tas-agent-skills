@@ -124,6 +124,19 @@ Selected based on primary task:
 - Java: `@java.instructions.md` + Spring Boot patterns
 - Go/Rust/Python: Reference implementations
 
+### Workflow-Driven Execution
+
+You MUST use these workflows (slash commands) as your primary execution steps:
+
+- `/full-lifecycle-delivery` - Master orchestrator for end-to-end delivery
+- `/new-requirement` - Requirement analysis and document scaffolding
+- `/execute-plan` - Story-by-story test-driven implementation
+- `/qa-testing` - Verification and regression safety
+- `/capture-knowledge` - Document specific code entry points
+- `/remember` - Store reusable patterns using `tas-agent memory store`
+- `/code-review`, `/review-design`, `/review-requirements` - Quality guardrails
+- `/debug`, `/simplify-implementation`, `/technical-writer-review` - Refinement tools
+
 ### Reusable Skills
 
 Leverage established patterns:
@@ -150,30 +163,19 @@ copilot --agent fullstack-delivery-agent --prompt "Implement..."
 copilot --prompt "Build a complete feature from requirements to testing with..."
 ```
 
-### Common Task Patterns
-
-**Planning & Decomposition**: Ask the agent to break down feature requirements into user stories
+**Workflow Execution**: Use slash commands to trigger structured workflows
 
 ```bash
-copilot --agent fullstack-delivery-agent --prompt "Break down this feature requirement into independent user stories with acceptance criteria..."
+/full-lifecycle-delivery # Start a new feature
+/remember                # Capture a new pattern
+/debug                   # Fix an issue
 ```
 
-**Feature Implementation**: Ask for complete implementation following TDD and clean architecture
+**Memory Management**: Use the CLI for semantic search and storage
 
 ```bash
-copilot --agent fullstack-delivery-agent --prompt "Implement this user story with unit tests first, then business logic..."
-```
-
-**Testing & Quality**: Ask the agent to verify and test your changes
-
-```bash
-copilot --agent fullstack-delivery-agent --prompt "Verify this implementation against acceptance criteria and run all test scenarios..."
-```
-
-**Debugging**: Ask for help debugging complex issues or performance problems
-
-```bash
-copilot --agent fullstack-delivery-agent --prompt "Debug this issue by tracing through execution and inspecting state at key points..."
+tas-agent memory store "Title" "Content" --tags "tag1"
+tas-agent memory search "query"
 ```
 
 ## Error Codes Reference

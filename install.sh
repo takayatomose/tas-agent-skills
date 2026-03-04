@@ -13,20 +13,57 @@ BINARY="tas-agent"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 VERSION=""
 
-# Parse arguments
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --version|-v)
-      VERSION="$2"; shift 2 ;;
-    --dir|-d)
-      INSTALL_DIR="$2"; shift 2 ;;
-    --help|-h)
-      echo "Usage: install.sh [--version <tag>] [--dir <install-dir>]"
-      exit 0 ;;
-    *)
-      echo "Unknown option: $1"; exit 1 ;;
-  esac
-done
+# ── Detect platform ───────────────────────────────────────────────────────────
+
+OS="$(uname -s)"
+ARCH="$(uname -m)"
+
+# ── Dependencies ──────────────────────────────────────────────────────────────
+
+check_dependencies() {
+  echo "Checking dependencies..."
+  
+  # Python3 check
+  if command -v python3 >/dev/null 2>&1; then
+    echo "✓ Python3 is installed ($(python3 --version))"
+  else
+    echo "⚠ Python3 is not installed. Attempting to install..."
+    if [ "$OS" = "Darwin" ]; then
+      if command -v brew >/dev/null 2>&1; then
+        brew install python
+      else
+        echo "Error: Homebrew is required to install Python. Please install it first: https://brew.sh"
+        exit 1
+      fi
+    elif [ "$OS" = "Linux" ]; then
+      if command -v apt-get >/dev/null 2>&1; then
+        sudo apt-get update && sudo apt-get install -y python3
+      else
+        echo "Error: Unknown Linux distribution. Please install python3 manually."
+        exit 1
+      fi
+    fi
+  fi
+
+  # Ollama check
+  if command -v ollama >/dev/null 2>&1; then
+    echo "✓ Ollama is installed ($(ollama --version))"
+  else
+    echo "⚠ Ollama is not installed. Attempting to install..."
+    if [ "$OS" = "Darwin" ]; then
+      if command -v brew >/dev/null 2>&1; then
+        brew install --cask ollama
+      else
+        echo "Please install Ollama from https://ollama.com"
+        exit 1
+      fi
+    elif [ "$OS" = "Linux" ]; then
+      curl -fsSL https://ollama.com/install.sh | sh
+    fi
+  fi
+}
+
+check_dependencies
 
 # ── Detect platform ───────────────────────────────────────────────────────────
 
@@ -103,6 +140,29 @@ fi
 echo ""
 echo "✓ Installed: ${DEST}"
 echo ""
+
+# ── Initialize Config ─────────────────────────────────────────────────────────
+
+CONFIG_DIR="$HOME/.tas-agent"
+CONFIG_FILE="$CONFIG_DIR/config.json"
+
+if [ ! -d "$CONFIG_DIR" ]; then
+  mkdir -p "$CONFIG_DIR"
+fi
+
+if [ ! -f "$CONFIG_FILE" ]; then
+  echo "Initializing default config at $CONFIG_FILE..."
+  cat <<EOF > "$CONFIG_FILE"
+{
+  "memory": {
+    "provider": "openai",
+    "base_url": "http://localhost:11434/v1",
+    "model": "nomic-embed-text",
+    "api_key": "ollama"
+  }
+}
+EOF
+fi
 
 # ── Verify ────────────────────────────────────────────────────────────────────
 

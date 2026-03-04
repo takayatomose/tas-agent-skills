@@ -11,26 +11,29 @@ As you move through this workflow, your primary expertise should shift to match 
 3. **Phase 3 (QA)**: Load `testing`.
 4. **Phase 4 (Review)**: Load `docs-analysis` (to finalize docs).
 
+### 🛠 Workflow Orchestration
+This master workflow coordinates specialized sub-workflows. You can switch between them as needed or call them individually for specific tasks.
+
 ### Phase 1: Planning & Analysis (Business Analysis)
-*Objective: Discover context through documentation, map user stories, and define repositories.*
-- [ ] **Task Visibility**: Create a `task.md` file in the `@brain/` directory. This is the **source of truth** for tracking progress.
-- [ ] **Analyze Documentation**: Execute `@docs-analysis` skill to gather existing logic and constraints.
-- [ ] **Repository Context**: Explicitly identify whether tasks belong to the Backend (e.g., `omi-channel-be`), Frontend (e.g., `findtourgoUI`), or both.
-- [ ] **Execution**: Follow the [@ba-requirement-analysis.md] workflow.
-- [ ] **Checkpoint**: Success is defined by an approved implementation plan and a populated `task.md` checklist.
+*Objective: Discover context, map user stories, and define architectural boundaries.*
+1. **Task Visibility** — Create/update `task.md` in `@brain/`. Mark tasks as `[ ]`, `[/]`, or `[x]`.
+2. **Context Discovery** — Run `/new-requirement` to scaffold documentation and analyze project context.
+3. **Requirement Mapping** — Decompose requirements into actionable stories. Run `/capture-knowledge` for complex components.
+4. **Implementation Plan** — Create an `implementation_plan.md`. Success is an approved plan and populated `task.md`.
 
 ### Phase 2: Iterative Implementation (Development)
-*Objective: Deliver the feature increment through TDD and clean architecture.*
-- [ ] **Execution**: Follow the [@dev-implementation.md] workflow for each story/increment.
-- [ ] **Checkpoint**: Success is defined by code that meets all Architectural and Business Logic rules.
+*Objective: Deliver functional increments through TDD and clean architecture.*
+1. **Task Execution** — Run `/execute-plan` for each User Story. 
+2. **Design Compliance** — Run `/check-implementation` or `/review-design` to ensure alignment with documentation.
+3. **Refinement** — Run `/simplify-implementation` for complex logic. Run `/remember` to store new patterns.
 
 ### Phase 3: Quality Assurance (Testing)
-*Objective: Systematically verify functional and non-functional requirements.*
-- [ ] **Execution**: Follow the [@qa-testing.md] workflow.
-- [ ] **Checkpoint**: Success is defined by 100% green tests and a comprehensive walkthrough.
+*Objective: Systematically verify requirements and ensure regression safety.*
+1. **Verification** — Run `/qa-testing` for the delivered increment.
+2. **Automated Testing** — Run `/writing-test` for missing coverage.
+3. **Technical Review** — Run `/code-review` and `/technical-writer-review` to polish documentation and code.
 
 ### Phase 4: Lifecycle Closure & Review
-*Objective: Collect evidence, refine the system, and close the sprint.*
-- [ ] **Documentation**: Finalize the `walkthrough.md` and ensure all technical docs in the `docs/` folder are updated.
-- [ ] **Refinement**: Review any "technical debt" identified during the cycle and plan for future iterations.
-- [ ] **Sign-off**: Present the final result to the user for project closure.
+*Objective: Collect evidence and finalize the delivery.*
+1. **Evidence** — Finalize `walkthrough.md`. Update all docs in `docs/` via `/update-planning`.
+2. **Sign-off** — Present results to the user and mark the sprint as closed.

@@ -96,9 +96,14 @@ jobs:
       - name: List files
         run: ls -lh dist/
 
+      - name: Prepare release files
+        run: |
+          cp uninstall.sh dist/
+          cp uninstall.ps1 dist/
+
       - name: Generate checksums
         working-directory: dist
-        run: sha256sum tas-agent-* > checksums.txt && cat checksums.txt
+        run: sha256sum tas-agent-* uninstall.* > checksums.txt && cat checksums.txt
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -117,6 +122,18 @@ jobs:
             irm https://raw.githubusercontent.com/${{ github.repository }}/main/install.ps1 | iex
             ```
 
+            ## Uninstall
+
+            ### macOS / Linux
+            ```sh
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/uninstall.sh | sh -s -- --clear-data
+            ```
+
+            ### Windows (PowerShell)
+            ```powershell
+            irm https://raw.githubusercontent.com/${{ github.repository }}/main/uninstall.ps1 | iex -Arguments "-ClearData"
+            ```
+
             ### Manual download
             Pick the binary for your platform below and put it in your `PATH`.
 
@@ -128,6 +145,8 @@ jobs:
             dist/tas-agent-linux-amd64
             dist/tas-agent-linux-arm64
             dist/tas-agent-windows-amd64.exe
+            dist/uninstall.sh
+            dist/uninstall.ps1
             dist/checksums.txt
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
