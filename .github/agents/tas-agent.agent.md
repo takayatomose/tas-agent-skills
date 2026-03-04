@@ -51,6 +51,21 @@ tas-agent memory store "<Title>" "<Content>" --tags "<tag1,tag2>"
 | DTO / interface consolidated         | ✅ Yes |
 | Single-line typo fix                 | ❌ No  |
 
+### Todo List Structure — ENFORCED
+
+Every todo list for a non-trivial task **MUST** follow this structure:
+
+```
+☑ 1. [GATE 1] Memory search: "<topic>"
+   ... actual work tasks ...
+☑ N. [GATE 2] Memory store: "<title>"
+```
+
+- Task #1 is **always** `tas-agent memory search`
+- Task #N (last) is **always** `tas-agent memory store`
+- Both are marked done before the session ends
+- ❌ A todo list without these two bookend tasks is invalid
+
 ---
 
 ## Overview

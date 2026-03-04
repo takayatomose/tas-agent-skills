@@ -175,6 +175,14 @@ All AI Agent operations MUST utilize the local semantic memory:
 
    Both gates are **blocking**. Skipping either is a workflow violation.
 
+   **Todo List Rule**: Every todo list MUST be structured as:
+   ```
+   1. [GATE 1] Memory search: "<topic>"      ← always first
+      ... actual work tasks ...
+   N. [GATE 2] Memory store: "<title>"       ← always last
+   ```
+   A todo list without these two bookend tasks is **invalid**.
+
 6. **Build**: Run lint → build → test before commit
 7. **Package Manager**: Use `yarn` for NestJS, `gradle` for Java (never npm for Node projects)
 
