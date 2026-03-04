@@ -148,33 +148,21 @@ Leverage established patterns:
 - `database` - Migrations, multi-database orchestration
 - `backend/{language}` - Language-specific best practices
 
+### Memory & Knowledge Capture
+
+- **Pattern Capture**: Automatically use `tas-agent memory store` to save reusable architectural patterns or complex logic
+- **Decision Logging**: Record significant technical decisions and their rationale for future context
+- **Cross-Project Memory**: Leverage and contribute to the global semantic memory using `tas-agent memory search` and `store`
+
 ## How to Invoke This Agent
-
-### Using GitHub Copilot CLI
-
-```bash
-# Slash command - select the agent interactively
-copilot --prompt "Implement a user story for..."
-
-# Explicit instruction - direct agent invocation
-copilot --agent fullstack-delivery-agent --prompt "Implement..."
-
-# By prompt inference - Copilot automatically selects this agent based on task context
-copilot --prompt "Build a complete feature from requirements to testing with..."
-```
-
-**Workflow Execution**: Use slash commands to trigger structured workflows
+...
+**Memory Management**: You MUST actively use the CLI for semantic search and storage during development:
 
 ```bash
-/full-lifecycle-delivery # Start a new feature
-/remember                # Capture a new pattern
-/debug                   # Fix an issue
-```
+# When you discover or implement a reusable pattern:
+tas-agent memory store "Title" "Content" --tags "tag1,tag2"
 
-**Memory Management**: Use the CLI for semantic search and storage
-
-```bash
-tas-agent memory store "Title" "Content" --tags "tag1"
+# When starting a new task, search for existing context:
 tas-agent memory search "query"
 ```
 

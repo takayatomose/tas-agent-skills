@@ -17,7 +17,7 @@ This master workflow coordinates specialized sub-workflows. You can switch betwe
 ### Phase 1: Planning & Analysis (Business Analysis)
 *Objective: Discover context, map user stories, and define architectural boundaries.*
 1. **Task Visibility** — Create/update `task.md` in `@brain/`. Mark tasks as `[ ]`, `[/]`, or `[x]`.
-2. **Context Discovery** — Run `/new-requirement` to scaffold documentation and analyze project context.
+2. **Context Discovery** — Run `tas-agent memory search "<topic>"` to find existing patterns. Run `/new-requirement` to scaffold documentation.
 3. **Requirement Mapping** — Decompose requirements into actionable stories. Run `/capture-knowledge` for complex components.
 4. **Implementation Plan** — Create an `implementation_plan.md`. Success is an approved plan and populated `task.md`.
 
@@ -32,6 +32,7 @@ This master workflow coordinates specialized sub-workflows. You can switch betwe
 1. **Verification** — Run `/qa-testing` for the delivered increment.
 2. **Automated Testing** — Run `/writing-test` for missing coverage.
 3. **Technical Review** — Run `/code-review` and `/technical-writer-review` to polish documentation and code.
+4. **Memory Capture** — Run `tas-agent memory store` to save significant patterns or decisions.
 
 ### Phase 4: Lifecycle Closure & Review
 *Objective: Collect evidence and finalize the delivery.*
