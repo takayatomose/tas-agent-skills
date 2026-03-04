@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type EmbeddingProvider interface {
@@ -19,9 +20,13 @@ type OpenAIEmbeddingProvider struct {
 }
 
 func (p *OpenAIEmbeddingProvider) GenerateEmbedding(ctx context.Context, text string) ([]float32, error) {
-	url := fmt.Sprintf("%s/v1/embeddings", p.BaseURL)
-	if p.BaseURL == "" {
+	url := p.BaseURL
+	if url == "" {
 		url = "https://api.openai.com/v1/embeddings"
+	} else {
+		if !strings.HasSuffix(url, "/embeddings") {
+			url = strings.TrimSuffix(url, "/") + "/embeddings"
+		}
 	}
 
 	reqBody, _ := json.Marshal(map[string]interface{}{
