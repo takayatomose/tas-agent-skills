@@ -1,9 +1,10 @@
 name: Build & Release
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+  push:
     tags:
       - "v*.*.*"
 
@@ -12,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    name: Build (${{ matrix.goos }}/${{ matrix.goarch }})
+    name: Build & Check (${{ matrix.goos }}/${{ matrix.goarch }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -38,11 +39,11 @@ jobs:
         id: version
         run: |
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            # Tag push: use tag name
             VERSION="${GITHUB_REF_NAME}"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            VERSION="pr-${{ github.event.pull_request.number }}-${{ github.sha }}"
           else
-            # Main branch push: use dev-version+commit
-            VERSION="dev-$(date +%Y%m%d)-${GITHUB_SHA:0:7}"
+            VERSION="dev-${{ github.sha }}"
           fi
           COMMIT=$(git rev-parse --short HEAD)
           BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -75,10 +76,10 @@ jobs:
         with:
           name: ${{ matrix.goos }}-${{ matrix.goarch }}
           path: dist/
-          retention-days: 5
+          retention-days: 2
 
   release:
-    name: Create/Update GitHub Release
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
@@ -93,60 +94,26 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - name: List files
-        run: ls -lh dist/
-
       - name: Prepare release files
         run: |
           cp uninstall.sh dist/
           cp uninstall.ps1 dist/
-
-      - name: Generate checksums
-        working-directory: dist
-        run: sha256sum tas-agent-* uninstall.* > checksums.txt && cat checksums.txt
+          cd dist
+          sha256sum tas-agent-* uninstall.* > checksums.txt
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           name: "tas-agent ${{ github.ref_name }}"
           body: |
-            ## Install
-
-            ### macOS / Linux
-            ```sh
-            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | sh
-            ```
-
-            ### Windows (PowerShell)
-            ```powershell
-            irm https://raw.githubusercontent.com/${{ github.repository }}/main/install.ps1 | iex
-            ```
-
-            ## Uninstall
-
-            ### macOS / Linux
-            ```sh
-            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/uninstall.sh | sh -s -- --clear-data
-            ```
-
-            ### Windows (PowerShell)
-            ```powershell
-            irm https://raw.githubusercontent.com/${{ github.repository }}/main/uninstall.ps1 | iex -Arguments "-ClearData"
-            ```
-
-            ### Manual download
-            Pick the binary for your platform below and put it in your `PATH`.
-
-            ---
-            **Checksums**: See `checksums.txt` attached below.
+            ## Installation & Usage
+            Refer to [README.md](https://github.com/${{ github.repository }}) for full documentation.
+            
+            ### Checksums
+            See `checksums.txt` attached below.
           files: |
-            dist/tas-agent-darwin-amd64
-            dist/tas-agent-darwin-arm64
-            dist/tas-agent-linux-amd64
-            dist/tas-agent-linux-arm64
-            dist/tas-agent-windows-amd64.exe
-            dist/uninstall.sh
-            dist/uninstall.ps1
+            dist/tas-agent-*
+            dist/uninstall.*
             dist/checksums.txt
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
