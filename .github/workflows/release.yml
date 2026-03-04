@@ -106,11 +106,35 @@ jobs:
         with:
           name: "tas-agent ${{ github.ref_name }}"
           body: |
-            ## Installation & Usage
-            Refer to [README.md](https://github.com/${{ github.repository }}) for full documentation.
-            
-            ### Checksums
-            See `checksums.txt` attached below.
+            ## Install
+
+            ### macOS / Linux
+            ```sh
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | sh
+            ```
+
+            ### Windows (PowerShell)
+            ```powershell
+            irm https://raw.githubusercontent.com/${{ github.repository }}/main/install.ps1 | iex
+            ```
+
+            ## Uninstall
+
+            ### macOS / Linux
+            ```sh
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/uninstall.sh | sh -s -- --clear-data
+            ```
+
+            ### Windows (PowerShell)
+            ```powershell
+            irm https://raw.githubusercontent.com/${{ github.repository }}/main/uninstall.ps1 | iex -Arguments "-ClearData"
+            ```
+
+            ### Manual download
+            Pick the binary for your platform below and put it in your `PATH`.
+
+            ---
+            **Checksums**: See `checksums.txt` attached below.
           files: |
             dist/tas-agent-*
             dist/uninstall.*
