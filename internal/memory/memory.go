@@ -148,11 +148,19 @@ func (m *Manager) Compact(ctx context.Context, threshold float32) (int, error) {
 				continue
 			}
 
-			// We need vectors here. Let's assume they are present or we fetch them.
-			// Since I didn't update List to return vectors, I'll skip the actual math here
-			// to avoid blocking the user, but I'll document it clearly.
+			similarity := CosineSimilarity(fullItems[i].Vector, fullItems[j].Vector)
+			if similarity >= threshold {
+				// Remove the later one to keep the earlier one
+				if err := m.db.Delete(ctx, fullItems[j].ID); err != nil {
+					return removed, err
+				}
+				deletedIDs[fullItems[j].ID] = true
+				removed++
+			}
 		}
 	}
 
 	return removed, nil
 }
+
+// removed redundant CalculateSimilarityThreshold

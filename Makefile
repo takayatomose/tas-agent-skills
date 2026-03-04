@@ -61,9 +61,12 @@ test: build
 help:
 	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/## /  /'
 
-## tag: Create and push a new version tag (usage: make tag VERSION=v0.1.0)
+## tag: Create and push a new version tag (usage: make tag VERSION=v0.2.7)
 tag:
-	@test -n "$(VERSION)" || (echo "Usage: make tag VERSION=v0.1.0" && exit 1)
+	@test -n "$(VERSION)" || (echo "Usage: make tag VERSION=v0.2.7" && exit 1)
+	@echo "$(VERSION)" > VERSION
+	git add .
+	git commit -m "chore: bump version to $(VERSION)" || true
 	git tag -a $(VERSION) -m "Release $(VERSION)"
-	git push origin $(VERSION)
-	@echo "Tagged and pushed $(VERSION) — GitHub Actions will build and release."
+	git push origin main && git push origin $(VERSION)
+	@echo "Version bumped to $(VERSION), committed, and tagged. GitHub Actions will build and release."
