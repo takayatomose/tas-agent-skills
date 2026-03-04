@@ -47,6 +47,40 @@ else
   fi
 fi
 
+# ── Ollama Cleanup ────────────────────────────────────────────────────────────
+
+echo "Cleaning up Ollama services..."
+
+# Detect OS
+OS="$(uname -s)"
+
+if [ "$OS" = "Darwin" ]; then
+  PLIST_PATH="$HOME/Library/LaunchAgents/com.ollama.ollama.plist"
+  if [ -f "$PLIST_PATH" ]; then
+    echo "Removing Ollama LaunchAgent..."
+    launchctl unload "$PLIST_PATH" 2>/dev/null || true
+    rm "$PLIST_PATH"
+    echo "✓ LaunchAgent removed."
+  fi
+elif [ "$OS" = "Linux" ]; then
+  SERVICE_PATH="$HOME/.config/systemd/user/ollama.service"
+  if [ -f "$SERVICE_PATH" ]; then
+    echo "Removing Ollama systemd service..."
+    systemctl --user stop ollama 2>/dev/null || true
+    systemctl --user disable ollama 2>/dev/null || true
+    rm "$SERVICE_PATH"
+    systemctl --user daemon-reload
+    echo "✓ systemd service removed."
+  fi
+fi
+
+# Kill any running ollama process
+if pgrep -x "ollama" > /dev/null; then
+  echo "Terminating running Ollama processes..."
+  pkill -x "ollama" || true
+  echo "✓ Ollama processes terminated."
+fi
+
 # ── Clear Local Data ─────────────────────────────────────────────────────────
 
 if [ "$CLEAR_DATA" = true ]; then

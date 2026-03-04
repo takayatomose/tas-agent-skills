@@ -46,6 +46,50 @@ function Check-Dependencies {
             exit 1
         }
     }
+
+    # Start Ollama if not running
+    try {
+        $response = Invoke-WebRequest -Uri "http://127.0.0.1:11434" -UseBasicParsing -ErrorAction SilentlyContinue
+    } catch {
+        Write-Host "Starting Ollama in background..."
+        Start-Process "ollama" -ArgumentList "serve" -WindowStyle Hidden
+        
+        # Wait for Ollama to be ready
+        $maxRetries = 10
+        $count = 0
+        while ($true) {
+            try {
+                $response = Invoke-WebRequest -Uri "http://127.0.0.1:11434" -UseBasicParsing -ErrorAction SilentlyContinue
+                if ($response.StatusCode -eq 200) { break }
+            } catch {
+                if ($count -ge $maxRetries) {
+                    Write-Host "⚠ Timeout waiting for Ollama to start."
+                    break
+                }
+                Start-Sleep -Seconds 1
+                $count++
+            }
+        }
+    }
+
+    # Pull embedding model
+    Write-Host "Ensuring embedding model 'nomic-embed-text' is available..."
+    & ollama pull nomic-embed-text
+
+    # Setup auto-start on reboot
+    Write-Host "Setting up Ollama auto-start on reboot..."
+    $startupFolder = [System.IO.Path]::Combine($env:APPDATA, "Microsoft\Windows\Start Menu\Programs\Startup")
+    $shortcutPath = [System.IO.Path]::Combine($startupFolder, "Ollama.lnk")
+    
+    if (-not (Test-Path $shortcutPath)) {
+        $shell = New-Object -ComObject WScript.Shell
+        $shortcut = $shell.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath = (Get-Command "ollama").Source
+        $shortcut.Arguments = "serve"
+        $shortcut.WindowStyle = 7 # Minimized
+        $shortcut.Save()
+        Write-Host "✓ Created startup shortcut for Ollama"
+    }
 }
 
 Check-Dependencies
@@ -108,7 +152,7 @@ if (-not (Test-Path $ConfigFile)) {
     $DefaultConfig = @{
         memory = @{
             provider = "openai"
-            base_url = "http://localhost:11434/v1"
+            base_url = "http://127.0.0.1:11434/v1"
             model = "nomic-embed-text"
             api_key = "ollama"
         }

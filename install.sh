@@ -61,6 +61,80 @@ check_dependencies() {
       curl -fsSL https://ollama.com/install.sh | sh
     fi
   fi
+
+  # Start Ollama if not running
+  if ! curl -s http://127.0.0.1:11434 >/dev/null 2>&1; then
+    echo "Starting Ollama in background..."
+    ollama serve > /dev/null 2>&1 &
+    # Wait for Ollama to be ready
+    MAX_RETRIES=10
+    COUNT=0
+    while ! curl -s http://127.0.0.1:11434 >/dev/null 2>&1; do
+      [ $COUNT -eq $MAX_RETRIES ] && echo "⚠ Timeout waiting for Ollama to start." && break
+      sleep 1
+      COUNT=$((COUNT + 1))
+    done
+  fi
+
+  # Pull embedding model
+  echo "Ensuring embedding model 'nomic-embed-text' is available..."
+  ollama pull nomic-embed-text || echo "⚠ Failed to pull model, you may need to run 'ollama pull nomic-embed-text' manually."
+
+  # Setup auto-start on reboot
+  echo "Setting up Ollama auto-start on reboot..."
+  if [ "$OS" = "Darwin" ]; then
+    PLIST_PATH="$HOME/Library/LaunchAgents/com.ollama.ollama.plist"
+    if [ ! -f "$PLIST_PATH" ]; then
+      mkdir -p "$(dirname "$PLIST_PATH")"
+      cat <<EOF > "$PLIST_PATH"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.ollama.ollama</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>$(command -v ollama)</string>
+		<string>serve</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>$HOME/.ollama/ollama.log</string>
+	<key>StandardErrorPath</key>
+	<string>$HOME/.ollama/ollama.log</string>
+</dict>
+</plist>
+EOF
+      launchctl load "$PLIST_PATH" 2>/dev/null || true
+      echo "✓ Created LaunchAgent at $PLIST_PATH"
+    fi
+  elif [ "$OS" = "Linux" ]; then
+    SYSTEMD_DIR="$HOME/.config/systemd/user"
+    if [ -d "/run/systemd/system" ]; then
+      mkdir -p "$SYSTEMD_DIR"
+      cat <<EOF > "$SYSTEMD_DIR/ollama.service"
+[Unit]
+Description=Ollama Service
+After=network.target
+
+[Service]
+ExecStart=$(command -v ollama) serve
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
+EOF
+      systemctl --user daemon-reload
+      systemctl --user enable ollama
+      systemctl --user start ollama
+      echo "✓ Created systemd user service at $SYSTEMD_DIR/ollama.service"
+    fi
+  fi
 }
 
 check_dependencies
@@ -156,7 +230,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
 {
   "memory": {
     "provider": "openai",
-    "base_url": "http://localhost:11434/v1",
+    "base_url": "http://127.0.0.1:11434/v1",
     "model": "nomic-embed-text",
     "api_key": "ollama"
   }

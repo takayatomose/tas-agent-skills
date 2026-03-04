@@ -29,6 +29,27 @@ if (Test-Path $Dest) {
     Write-Host "⚠ $Binary not found. It might already be uninstalled."
 }
 
+# ── Ollama Cleanup ────────────────────────────────────────────────────────────
+
+Write-Host "Cleaning up Ollama services..."
+
+$startupFolder = [System.IO.Path]::Combine($env:APPDATA, "Microsoft\Windows\Start Menu\Programs\Startup")
+$shortcutPath = [System.IO.Path]::Combine($startupFolder, "Ollama.lnk")
+
+if (Test-Path $shortcutPath) {
+    Write-Host "Removing Ollama startup shortcut..."
+    Remove-Item -Path $shortcutPath -Force
+    Write-Host "✓ Startup shortcut removed."
+}
+
+# Kill running ollama process
+$ollamaProc = Get-Process -Name "ollama" -ErrorAction SilentlyContinue
+if ($ollamaProc) {
+    Write-Host "Terminating running Ollama processes..."
+    Stop-Process -Name "ollama" -Force -ErrorAction SilentlyContinue
+    Write-Host "✓ Ollama processes terminated."
+}
+
 if ($ClearData) {
     if (Test-Path $DataDir) {
         Write-Host "Clearing local data at $DataDir..."
