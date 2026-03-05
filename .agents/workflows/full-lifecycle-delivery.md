@@ -16,6 +16,7 @@ This master workflow coordinates specialized sub-workflows. You can switch betwe
 
 ### Phase 1: Planning & Analysis (Business Analysis)
 *Objective: Discover context, map user stories, and define architectural boundaries.*
+0. **Gate In (MANDATORY)** — Run `tas-agent memory search "<overall project/feature goal>"` at the very start of the lifecycle.
 1. **Task Visibility** — Create/update `task.md` in `@brain/`. Mark tasks as `[ ]`, `[/]`, or `[x]`.
 2. **Context Discovery** — Run `tas-agent memory search "<topic>"` to find existing patterns. Run `/new-requirement` to scaffold documentation.
 3. **Requirement Mapping** — Decompose requirements into actionable stories. Run `/capture-knowledge` for complex components.
@@ -37,4 +38,5 @@ This master workflow coordinates specialized sub-workflows. You can switch betwe
 ### Phase 4: Lifecycle Closure & Review
 *Objective: Collect evidence and finalize the delivery.*
 1. **Evidence** — Finalize `walkthrough.md`. Update all docs in `docs/` via `/update-planning`.
-2. **Sign-off** — Present results to the user and mark the sprint as closed.
+2. **Gate Out (MANDATORY)** — Run `tas-agent memory store "Project Lifecycle: <Feature Name>" "<Complete Delivery Summary and Lessons Learned>"` to capture the end-to-end knowledge.
+3. **Sign-off** — Present results to the user and mark the sprint as closed.

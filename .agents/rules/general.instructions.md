@@ -142,11 +142,10 @@ Every request includes tenant context (company_id from JWT):
 
 ### Semantic Memory System (tas-agent memory)
 
-All AI Agent operations MUST utilize the local semantic memory:
-
-- **Search First**: Before starting a task, run `tas-agent memory search "<topic>"` to find existing patterns or decisions.
-- **Capture Patterns**: When implementing a reusable pattern or an architectural decision, run `tas-agent memory store "<Title>" "<Content>" --tags "<tags>"`.
-- **Compact Regularly**: Run `tas-agent memory compact --revector` periodically to keep the memory clean and up-to-date.
+All AI Agent operations MUST utilize the local semantic memory via **Memory Gating**:
+1. **Gate In (MANDATORY)**: EVERY workflow must start by running `tas-agent memory search "<topic>"` to retrieve historical context, patterns, and decisions.
+2. **Gate Out (MANDATORY)**: EVERY workflow must end by running `tas-agent memory store "<Title>" "<Content>" --tags "<tags>"` to capture new patterns, root causes, or architectural decisions.
+3. **Compact Regularly**: Run `tas-agent memory compact --revector` periodically to keep the memory clean and up-to-date.
 
 ## ⚠️ Critical Rules (ALL Languages)
 

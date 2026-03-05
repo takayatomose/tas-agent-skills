@@ -68,11 +68,13 @@ For each document, provide:
 
 ## Workflow Steps
 
+0. **Gate In (MANDATORY)** — Run `tas-agent memory search "<topic of documentation>"` to retrieve historical writing patterns and terminology.
 1. **Read the document** from start to finish as a novice would
 2. **Rate each aspect** using the criteria above
 3. **Identify specific issues** with line references
 4. **Suggest concrete fixes** with example text
 5. **Prioritize fixes** as High/Medium/Low impact
+6. **Gate Out (MANDATORY)** — Run `tas-agent memory store "Doc Review: <Document Name>" "<Summary of Critical Writing Improvements and Terminology Decisions>"` to store knowledge.
 
 ## Priority Levels
 
